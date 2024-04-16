@@ -1,11 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# ####!/bin/bash
 # This script can be copied into your base directory for use with
 # automated testing using assignment-autotest.  It automates the
 # steps described in https://github.com/cu-ecen-5013/assignment-autotest/blob/master/README.md#running-tests
 set -e
 
-cd `dirname $0`
-test_dir=`pwd`
+cd $(dirname $0)
+test_dir=$(pwd)
 echo "starting test with SKIP_BUILD=\"${SKIP_BUILD}\" and DO_VALIDATE=\"${DO_VALIDATE}\""
 
 # This part of the script always runs as the current user, even when
@@ -15,6 +17,8 @@ logfile=test.sh.log
 # See https://stackoverflow.com/a/3403786
 # Place stdout and stderr in a log file
 exec > >(tee -i -a "$logfile") 2> >(tee -i -a "$logfile" >&2)
+# exec 3>&1 4>&2 1>>"$logfile" 2>&1
+
 
 echo "Running test with user $(whoami)"
 
@@ -30,10 +34,10 @@ fi
 # additional tests
 if [ -f conf/assignment.txt ]; then
     # This is just one example of how you could find an associated assignment
-    assignment=`cat conf/assignment.txt`
+    assignment=$(cat conf/assignment.txt)
     if [ -f ./assignment-autotest/test/${assignment}/assignment-test.sh ]; then
         echo "Executing assignment test script"
-        ./assignment-autotest/test/${assignment}/assignment-test.sh $test_dir
+        ./assignment-autotest/test/${assignment}/assignment-test.sh "$test_dir"
         rc=$?
         if [ $rc -eq 0 ]; then
             echo "Test of assignment ${assignment} complete with success"
@@ -49,4 +53,4 @@ else
     echo "Missing conf/assignment.txt, no assignment to run"
     exit 1
 fi
-exit ${unit_test_rc}
+exit $unit_test_rc
